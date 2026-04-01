@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: codena
+      POSTGRES_USER: codena
+      POSTGRES_PASSWORD: codena
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:4
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  api:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  web:
+    build: ./web
+    env_file: .env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
