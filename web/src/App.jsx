@@ -1,16 +1,20 @@
-export default function App() {
-  return (
-    <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem'}}>
-      <h1 style={{fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem'}}>
-        🎉 Codéna v3 LIVE !
-      </h1>
-      <p style={{fontSize: '1.5rem', marginBottom: '2rem', textAlign: 'center'}}>
-        Fullstack FastAPI + React sur Render.com
-      </p>
-      <a href="https://codena-backend.onrender.com/docs" 
-         style={{background: 'white', color: '#3b82f6', padding: '1rem 2rem', borderRadius: '0.5rem', fontWeight: 'bold', textDecoration: 'none'}}>
-        🚀 API Swagger Docs
-      </a>
-    </div>
-  )
-}
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Phone(BaseModel):
+    phone: str
+
+@app.post("/auth/otp-send")
+async def send_otp(phone: Phone):
+    print(f"OTP pour {phone.phone}: 123456")  # Test console
+    return {"status": "OTP envoyé"}
+
+@app.post("/auth/otp-verify")
+async def verify_otp(phone: Phone):
+    return {"status": "OK", "token": "fake-jwt-token"}
+
+@app.get("/test")
+async def test():
+    return {"status": "Backend OK"}
