@@ -1,20 +1,26 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+import React from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import Lessons from "./pages/Lessons.jsx";
+import Booking from "./pages/Booking.jsx";
 
-app = FastAPI()
+export default function App() {
+  return (
+    <div style={{ maxWidth: 980, margin: "0 auto", padding: 24, fontFamily: "system-ui" }}>
+      <header style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
+        <h1 style={{ margin: "0 12px 0 0" }}>Codéna</h1>
+        <Link to="/login">Connexion</Link>
+        <Link to="/lessons">Cours</Link>
+        <Link to="/booking">Réserver</Link>
+        <a href="/docs" style={{ marginLeft: "auto" }}>Docs</a>
+      </header>
 
-class Phone(BaseModel):
-    phone: str
-
-@app.post("/auth/otp-send")
-async def send_otp(phone: Phone):
-    print(f"OTP pour {phone.phone}: 123456")  # Test console
-    return {"status": "OTP envoyé"}
-
-@app.post("/auth/otp-verify")
-async def verify_otp(phone: Phone):
-    return {"status": "OK", "token": "fake-jwt-token"}
-
-@app.get("/test")
-async def test():
-    return {"status": "Backend OK"}
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/lessons" element={<Lessons />} />
+        <Route path="/booking" element={<Booking />} />
+      </Routes>
+    </div>
+  );
+}
