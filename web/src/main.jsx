@@ -32,7 +32,7 @@ function App() {
       color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', padding: '2rem', fontFamily: 'system-ui'
     }}>
-      <h1 style={{fontSize: '3rem', marginBottom: '1rem'}}>🎉 Codéna v3</h1>
+      <h1 style={{fontSize: '3rem', marginBottom: '1rem'}}> Codéna v3</h1>
       <p>Préparation Permis Dakar</p>
       
       <div style={{maxWidth: '400px', textAlign: 'center'}}>
@@ -48,7 +48,7 @@ function App() {
       </div>
       
       <a href="https://codena-backend.onrender.com/docs" style={{marginTop: '2rem'}}>
-        📚 API Docs
+         API Docs
       </a>
     </div>
   )
