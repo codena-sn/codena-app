@@ -13,6 +13,6 @@ COPY app ./app
 RUN mkdir -p /app/app/media /app/app/generated
 
 COPY entrypoint.sh ./entrypoint.sh
+RUN sed -i 's/\r$//' ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
-
 CMD ["./entrypoint.sh"]
