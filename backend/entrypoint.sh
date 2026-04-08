@@ -9,6 +9,7 @@ echo "[boot] db is ready"
 
 echo "[boot] running migrations..."
 python -m alembic upgrade head
+
 echo "[boot] migrations done"
 
 echo "[boot] seeding..."
