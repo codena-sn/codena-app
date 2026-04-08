@@ -8,7 +8,7 @@ python -m app.wait_for_db
 echo "[boot] db is ready"
 
 echo "[boot] running migrations..."
-alembic upgrade head
+python -m alembic upgrade head
 echo "[boot] migrations done"
 
 echo "[boot] seeding..."
