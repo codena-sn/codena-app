@@ -98,6 +98,10 @@
   .sheetrow button{flex:1;padding:13px;border-radius:var(--r-sm);font-family:var(--fd);font-weight:700;font-size:15px;cursor:pointer;border:1px solid var(--line);}
   .copy{background:var(--brand);color:#fff;border-color:var(--brand)!important;}
   .close{background:#fff;color:var(--ink);}
+  .backup{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .backuplabel{display:block;color:var(--muted);font-size:12px;margin-bottom:9px;}
+  .save{background:var(--surface-2);color:var(--brand);border-color:var(--line)!important;}
+  .restore{background:#fff;color:var(--ink);}
 
   :focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
   @media (prefers-reduced-motion: reduce){*{transition:none!important;}}
@@ -143,6 +147,14 @@
       <button class="close" id="closeBtn">Fermer</button>
       <button class="copy" id="copyBtn">Tout copier</button>
     </div>
+    <div class="backup">
+      <span class="backuplabel">Sauvegarde complète (transfert vers un autre appareil)</span>
+      <div class="sheetrow">
+        <button class="restore" id="restoreBtn">Restaurer un fichier</button>
+        <button class="save" id="saveBtn">Sauvegarder (.json)</button>
+      </div>
+    </div>
+    <input id="importFile" type="file" accept="application/json,.json" hidden />
   </div>
 </div>
 
@@ -359,6 +371,55 @@
     if(navigator.clipboard&&navigator.clipboard.writeText){
       navigator.clipboard.writeText(exportText.value).then(ok).catch(function(){ try{document.execCommand("copy");ok();}catch(e){} });
     } else { try{document.execCommand("copy");ok();}catch(e){} }
+  });
+
+  // --- Sauvegarde / Restauration (fichier .json) ---
+  function dateStamp(){
+    var d=new Date();
+    return d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0");
+  }
+  document.getElementById("saveBtn").addEventListener("click",function(){
+    try{
+      var payload={app:"yms_todo",version:2,exported:new Date().toISOString(),tasks:tasks};
+      var blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement("a");
+      a.href=url; a.download="taches-yms-"+dateStamp()+".json";
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },0);
+    }catch(e){ alert("Sauvegarde impossible sur cet appareil."); }
+  });
+
+  var importFile=document.getElementById("importFile");
+  document.getElementById("restoreBtn").addEventListener("click",function(){ importFile.click(); });
+  importFile.addEventListener("change",function(){
+    var file=importFile.files&&importFile.files[0]; if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{
+        var data=JSON.parse(reader.result);
+        var imported=Array.isArray(data)?data:(data&&data.tasks);
+        if(!Array.isArray(imported)) throw new Error("format");
+        var clean=imported.filter(function(t){return t&&typeof t.text==="string";}).map(function(t){
+          return {
+            id:(typeof t.id==="string"&&t.id)?t.id:uid(),
+            text:String(t.text),
+            cat:CATS[t.cat]?t.cat:"commercial",
+            prio:!!t.prio,
+            due:(typeof t.due==="string"&&t.due)?t.due:null,
+            done:!!t.done,
+            created:(typeof t.created==="number")?t.created:Date.now()
+          };
+        });
+        if(!confirm("Remplacer vos "+tasks.length+" tâche(s) actuelle(s) par les "+clean.length+" tâche(s) du fichier ?")) return;
+        tasks=clean; persist();
+        overlay.classList.remove("show");
+        alert(clean.length+" tâche(s) restaurée(s).");
+      }catch(e){ alert("Fichier invalide. Choisissez un fichier de sauvegarde .json créé par cette application."); }
+      finally{ importFile.value=""; }
+    };
+    reader.onerror=function(){ alert("Lecture du fichier impossible."); importFile.value=""; };
+    reader.readAsText(file);
   });
 
   buildCatChips();
