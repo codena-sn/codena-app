@@ -1,0 +1,23 @@
+# Codena — SPA fallback (React Router) pour hebergement Apache / OVH
+# Sert index.html pour toutes les routes cote client (/login, /booking, ...)
+# afin qu'un rafraichissement ou un lien direct ne renvoie plus "Not Found".
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Laisser passer les fichiers et dossiers reels (assets JS/CSS, images, etc.)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Tout le reste -> index.html (l'application React gere la navigation)
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Petit bonus : forcer le type correct et un peu de cache sur les assets hashes
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2?|png|jpg|jpeg|svg|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
