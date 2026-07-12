@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, List
 
@@ -11,6 +12,29 @@ class TokenOut(BaseModel):
 
 class RefreshIn(BaseModel): refresh_token: str
 class LogoutIn(BaseModel): refresh_token: str
+
+# --------- Profil utilisateur (onboarding progressif) ---------
+class MeOut(BaseModel):
+    id: int
+    phone: Optional[str]=None
+    first_name: Optional[str]=None
+    email: Optional[str]=None
+    city: Optional[str]=None
+    language: Optional[str]=None
+    exam_goal: Optional[str]=None
+    referral_source: Optional[str]=None
+    marketing_consent: bool=False
+    profile_completed: bool=False
+    created_at: Optional[datetime]=None
+
+class MeUpdate(BaseModel):
+    first_name: Optional[str]=Field(default=None, max_length=120)
+    email: Optional[str]=Field(default=None, max_length=255)
+    city: Optional[str]=Field(default=None, max_length=120)
+    language: Optional[str]=Field(default=None, max_length=8)
+    exam_goal: Optional[str]=Field(default=None, max_length=32)
+    referral_source: Optional[str]=Field(default=None, max_length=64)
+    marketing_consent: Optional[bool]=None
 
 class LessonCreate(BaseModel):
     title: str

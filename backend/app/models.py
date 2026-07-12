@@ -19,6 +19,13 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(16), default="user")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    # --- Profil progressif (onboarding) ---
+    first_name: Mapped[Optional[str]] = mapped_column(String(120), nullable=True)
+    exam_goal: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)  # ex: "1m", "3m", "later"
+    referral_source: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    marketing_consent: Mapped[bool] = mapped_column(Boolean, default=False)
+    marketing_consent_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    profile_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
 
 class OTPCode(Base):
