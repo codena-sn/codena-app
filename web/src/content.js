@@ -1,25 +1,28 @@
 // Contenu pédagogique Codéna — code de la route & conduite (Sénégal)
-// Illustrations en SVG sur mesure (aucune dépendance externe, sans droits).
+// Illustrations SVG sur mesure (panneaux officiels en vectoriel, sans droits).
 
 const svgWrap = (inner, bg = "#E8F7F0") =>
   `<svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
      <rect width="320" height="170" rx="18" fill="${bg}"/>${inner}</svg>`;
 
-// --- petits éléments réutilisables ---
 const dangerTri = (x, y, s = 1) =>
   `<g transform="translate(${x},${y}) scale(${s})"><polygon points="30,4 56,50 4,50" fill="#fff" stroke="#F04438" stroke-width="5" stroke-linejoin="round"/><text x="30" y="44" font-size="30" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#0C1E17">!</text></g>`;
 const interdit = (x, y, s = 1) =>
   `<g transform="translate(${x},${y}) scale(${s})"><circle cx="28" cy="28" r="24" fill="#fff" stroke="#F04438" stroke-width="5"/><rect x="6" y="24" width="44" height="8" rx="2" fill="#F04438" transform="rotate(-45 28 28)"/></g>`;
 const oblig = (x, y, s = 1) =>
   `<g transform="translate(${x},${y}) scale(${s})"><circle cx="28" cy="28" r="24" fill="#1D4ED8"/><path d="M28 14 L28 42 M28 14 L20 24 M28 14 L36 24" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
-const trafficLight = (x, y) =>
-  `<g transform="translate(${x},${y})"><rect x="0" y="0" width="40" height="96" rx="10" fill="#0C1E17"/><circle cx="20" cy="22" r="12" fill="#F04438"/><circle cx="20" cy="48" r="12" fill="#FBBF24"/><circle cx="20" cy="74" r="12" fill="#0E9F6E"/></g>`;
 const car = (x, y, color = "#0E9F6E", s = 1) =>
   `<g transform="translate(${x},${y}) scale(${s})"><path d="M4 30 L14 30 L22 16 L52 16 L60 30 L74 30 L74 44 L4 44 Z" fill="${color}"/><rect x="26" y="20" width="22" height="12" rx="2" fill="#EAF7F0"/><circle cx="20" cy="46" r="8" fill="#0C1E17"/><circle cx="60" cy="46" r="8" fill="#0C1E17"/></g>`;
 const speedSign = (x, y, n = "50") =>
   `<g transform="translate(${x},${y})"><circle cx="30" cy="30" r="27" fill="#fff" stroke="#F04438" stroke-width="6"/><text x="30" y="40" font-size="26" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#0C1E17">${n}</text></g>`;
 const stopSign = (x, y) =>
   `<g transform="translate(${x},${y})"><polygon points="18,2 42,2 58,18 58,42 42,58 18,58 2,42 2,18" fill="#F04438"/><text x="30" y="38" font-size="15" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#fff">STOP</text></g>`;
+const pSign = (x, y) =>
+  `<g transform="translate(${x},${y})"><rect x="0" y="0" width="56" height="56" rx="8" fill="#1D4ED8"/><text x="28" y="42" font-size="40" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#fff">P</text></g>`;
+const cross = (x, y) =>
+  `<g transform="translate(${x},${y})"><rect x="0" y="0" width="60" height="60" rx="10" fill="#fff" stroke="#F04438" stroke-width="3"/><rect x="24" y="12" width="12" height="36" fill="#F04438"/><rect x="12" y="24" width="36" height="12" fill="#F04438"/></g>`;
+const headlight = (x, y) =>
+  `<g transform="translate(${x},${y})"><circle cx="26" cy="26" r="20" fill="#FBBF24"/><g stroke="#FBBF24" stroke-width="6" stroke-linecap="round"><line x1="52" y1="14" x2="86" y2="6"/><line x1="52" y1="26" x2="90" y2="26"/><line x1="52" y1="38" x2="86" y2="46"/></g></g>`;
 
 export const LESSONS = [
   {
@@ -146,8 +149,98 @@ export const LESSONS = [
       { q: "Sur une piste sablonneuse, je dois :", options: ["Freiner et tourner brusquement", "Conduire souplement, vitesse réduite", "Accélérer fortement"], answer: 1, explain: "Faible adhérence : souplesse et vitesse réduite." },
     ],
   },
+  {
+    id: "eclairage", title: "L'éclairage du véhicule", chapter: "Véhicule", cls: "y",
+    svg: svgWrap(`${headlight(60, 55)}${car(180, 70, "#0E9F6E")}`, "#FEF3D6"),
+    intro: "Bien utiliser ses feux, c'est voir et être vu. Chaque feu a un usage précis.",
+    sections: [
+      { h: "Quel feu, quand ?", list: ["Feux de position : pour être vu, à l'arrêt ou en complément.", "Feux de croisement (codes) : la nuit, sous la pluie, dans la poussière, et au croisement pour ne pas éblouir.", "Feux de route (pleins phares) : la nuit hors agglomération, voie libre ; repasser en codes dès qu'un véhicule approche.", "Feux de brouillard : visibilité fortement réduite."] },
+      { h: "Détresse et clignotants", p: "Les feux de détresse signalent une immobilisation dangereuse ou un ralentissement brutal. Les clignotants et feux stop servent à signaler ses intentions et ses freinages." },
+      { h: "Le klaxon", p: "Il sert à prévenir d'un danger immédiat, pas à exprimer l'impatience. En agglomération son usage est limité ; la nuit, on préfère l'appel de phares." },
+    ],
+    quiz: [
+      { q: "La nuit hors agglomération, voie libre, j'utilise :", options: ["Les feux de position", "Les feux de route", "Rien"], answer: 1, explain: "Les feux de route éclairent loin quand la voie est libre ; on repasse en codes au croisement." },
+      { q: "Au croisement d'un véhicule la nuit, je passe :", options: ["En pleins phares", "En feux de croisement (codes)", "En feux de détresse"], answer: 1, explain: "On passe en codes pour ne pas éblouir l'autre conducteur." },
+      { q: "Le klaxon sert :", options: ["À exprimer l'impatience", "À prévenir d'un danger immédiat", "À saluer"], answer: 1, explain: "Son usage est réservé à la prévention d'un danger." },
+    ],
+  },
+  {
+    id: "stationnement", title: "L'arrêt et le stationnement", chapter: "Circulation", cls: "g",
+    svg: svgWrap(`${pSign(50, 55)}${car(160, 70, "#0E9F6E")}`),
+    intro: "L'arrêt est momentané (conducteur aux commandes) ; le stationnement est prolongé. On se range à droite, sans gêner.",
+    sections: [
+      { h: "Où c'est interdit", list: ["Sur ou juste avant un passage piéton ; en double file ; dans un virage ; au sommet d'une côte ; sur un pont.", "Devant une bouche d'incendie, une entrée de garage, un arrêt de transport.", "Sur les voies réservées et là où un panneau l'interdit."] },
+      { h: "Stationner en pente et de nuit", p: "En pente, braquez les roues vers le trottoir et serrez le frein à main. La nuit, hors zone éclairée, laissez les feux de position allumés pour être vu." },
+      { h: "Repartir en sécurité", p: "Contrôlez les rétroviseurs et l'angle mort, signalez avec le clignotant, et insérez-vous quand c'est sûr. À Dakar, le stationnement gênant peut entraîner l'enlèvement du véhicule." },
+    ],
+    quiz: [
+      { q: "Je peux stationner :", options: ["Sur un passage piéton", "À droite sans gêner la circulation", "En double file"], answer: 1, explain: "On se range à droite sans gêner ni les véhicules ni les piétons." },
+      { q: "En stationnement en pente, je dois :", options: ["Laisser les roues droites", "Braquer les roues et serrer le frein à main", "Laisser au point mort sans frein"], answer: 1, explain: "Braquer les roues évite que le véhicule ne dévale la pente." },
+      { q: "La nuit, à l'arrêt hors zone éclairée, j'allume :", options: ["Les pleins phares", "Les feux de position", "Rien"], answer: 1, explain: "Les feux de position permettent d'être vu sans éblouir." },
+    ],
+  },
+  {
+    id: "secours", title: "Accidents et premiers secours", chapter: "Sécurité", cls: "r",
+    svg: svgWrap(`${cross(90, 55)}<g transform="translate(180,60)"><rect x="0" y="0" width="70" height="46" rx="8" fill="#0C1E17"/><text x="35" y="32" font-size="22" text-anchor="middle" font-family="Arial" font-weight="bold" fill="#fff">18</text></g>`, "#FDE7E5"),
+    intro: "Face à un accident, une bonne réaction peut sauver des vies. La démarche : Protéger, Alerter, Secourir (PAS).",
+    sections: [
+      { h: "Protéger", p: "Baliser les lieux (triangle, feux de détresse), couper le contact des véhicules, éviter le sur-accident." },
+      { h: "Alerter", p: "Appeler les secours : Sapeurs-pompiers 18, Police 17. Indiquer le lieu précis, le nombre de blessés et leur état." },
+      { h: "Secourir", list: ["Ne pas déplacer un blessé sauf danger immédiat (incendie).", "Comprimer une plaie qui saigne avec un tissu propre.", "Personne inconsciente qui respire : la mettre sur le côté (position latérale de sécurité).", "Ne jamais donner à boire à un blessé."] },
+    ],
+    quiz: [
+      { q: "En cas d'accident, la bonne démarche est :", options: ["Secourir, Alerter, Protéger", "Protéger, Alerter, Secourir", "Partir vite"], answer: 1, explain: "On protège d'abord, on alerte, puis on secourt (PAS)." },
+      { q: "Le numéro des sapeurs-pompiers au Sénégal est :", options: ["17", "18", "15"], answer: 1, explain: "Les sapeurs-pompiers, c'est le 18 (police : 17)." },
+      { q: "Une personne inconsciente qui respire doit être mise :", options: ["Sur le dos", "En position latérale de sécurité", "Assise"], answer: 1, explain: "La position latérale de sécurité évite l'étouffement." },
+    ],
+  },
+  {
+    id: "reglementation", title: "Règles, infractions et sanctions", chapter: "Réglementation", cls: "r",
+    svg: svgWrap(`${dangerTri(50, 50)}<g transform="translate(150,45)"><rect x="0" y="0" width="120" height="78" rx="8" fill="#fff" stroke="#0C1E17" stroke-width="3"/><rect x="14" y="16" width="60" height="8" fill="#F04438"/><rect x="14" y="34" width="90" height="6" fill="#5A6B63"/><rect x="14" y="48" width="90" height="6" fill="#5A6B63"/><text x="90" y="70" font-size="16" text-anchor="middle" font-family="Arial" font-weight="bold" fill="#F04438">AMENDE</text></g>`, "#FDE7E5"),
+    intro: "Le non-respect du code entraîne des sanctions. Le nouveau conducteur doit être particulièrement prudent.",
+    sections: [
+      { h: "Les infractions les plus sanctionnées", list: ["Excès de vitesse.", "Alcool au-delà de 0,5 g/l.", "Non-port de la ceinture ou du casque.", "Franchissement de feu rouge ou de STOP.", "Téléphone au volant.", "Conduite sans assurance ou sans permis."] },
+      { h: "Les sanctions", p: "Elles vont de l'amende à l'immobilisation du véhicule, la suspension ou le retrait du permis, avec des peines aggravées en cas de récidive ou d'accident corporel." },
+      { h: "Le contrôle routier", p: "Présentez calmement permis, carte grise, assurance et visite technique. Des documents en règle et une attitude coopérative facilitent le contrôle." },
+    ],
+    quiz: [
+      { q: "Conduire sans assurance :", options: ["Est toléré en ville", "Est illégal et lourdement sanctionné", "Est autorisé la journée"], answer: 1, explain: "L'assurance est obligatoire ; rouler sans est une infraction grave." },
+      { q: "Le nouveau conducteur (période probatoire) doit :", options: ["Rouler plus vite", "Être particulièrement prudent", "Ignorer les limitations"], answer: 1, explain: "Ses fautes sont plus lourdement sanctionnées : prudence." },
+      { q: "Lors d'un contrôle, je présente :", options: ["Seulement le permis", "Permis, carte grise, assurance, visite technique", "Aucun document"], answer: 1, explain: "Tous les documents du véhicule et du conducteur peuvent être exigés." },
+    ],
+  },
 ];
 
 export function getLesson(id) {
   return LESSONS.find((l) => l.id === id);
+}
+
+// --- Réservoir de questions pour l'examen blanc (toutes les questions des leçons) ---
+export const EXAM_POOL = LESSONS.flatMap((l) => l.quiz.map((q) => ({ ...q, chapter: l.chapter })));
+
+export function pickExam(n = 25) {
+  const pool = [...EXAM_POOL];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, Math.min(n, pool.length));
+}
+
+// --- Progression de l'élève (stockée dans le navigateur) ---
+const PKEY = "codena_progress";
+export function getProgress() {
+  try { return JSON.parse(localStorage.getItem(PKEY)) || { lessons: {}, exam: null }; }
+  catch { return { lessons: {}, exam: null }; }
+}
+export function saveLessonScore(id, score, total) {
+  const p = getProgress();
+  const prev = p.lessons[id]?.score || 0;
+  p.lessons[id] = { score: Math.max(prev, score), total, done: true };
+  try { localStorage.setItem(PKEY, JSON.stringify(p)); } catch {}
+}
+export function saveExamScore(score, total) {
+  const p = getProgress();
+  if (!p.exam || score > p.exam.score) p.exam = { score, total, date: Date.now() };
+  try { localStorage.setItem(PKEY, JSON.stringify(p)); } catch {}
 }
