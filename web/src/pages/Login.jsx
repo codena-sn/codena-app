@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, API, setTokens } from "../api.js";
 
 export default function Login() {
+  const nav = useNavigate();
   const [phone, setPhone] = useState("");
   const [debug, setDebug] = useState("");
   const [code, setCode] = useState("");
@@ -41,6 +43,16 @@ export default function Login() {
       const r = await api("/auth/otp/verify", { method: "POST", body: { phone: p, code } });
       setTokens(r.access_token, r.refresh_token);
       setMsg("Connecté ✅");
+      // Onboarding : si le profil n'est pas complété, on fait connaissance.
+      let dest = "/lessons";
+      try {
+        const me = await api("/me", { auth: true });
+        const skipped = localStorage.getItem("codena_onboard_skip") === "1";
+        if (me && !me.profile_completed && !skipped) dest = "/bienvenue";
+      } catch {
+        // endpoint indisponible : on continue normalement
+      }
+      nav(dest);
     } catch (e) {
       setMsg(`Erreur: ${e.message}`);
     } finally {
