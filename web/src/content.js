@@ -215,6 +215,23 @@ export function getLesson(id) {
   return LESSONS.find((l) => l.id === id);
 }
 
+// --- Vraies photos sous licence (Pexels, usage commercial autorisé) ---
+const PX = (id) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900&h=470&fit=crop`;
+export const LESSON_IMG = {
+  signalisation: PX(33893298),
+  priorites: PX(34095344),
+  vitesse: PX(32232419),
+  depassement: PX(15121717),
+  conducteur: PX(37421212),
+  vehicule: PX(32667397),
+  securite: PX(5835435),
+  conditions: PX(29029741),
+  eclairage: PX(30546867),
+  stationnement: PX(36443561),
+  secours: PX(6129679),
+  reglementation: PX(27137059),
+};
+
 // --- Réservoir de questions pour l'examen blanc (toutes les questions des leçons) ---
 export const EXAM_POOL = LESSONS.flatMap((l) => l.quiz.map((q) => ({ ...q, chapter: l.chapter })));
 
