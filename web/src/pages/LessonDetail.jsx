@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getLesson, saveLessonScore } from "../content.js";
+import { getLesson, saveLessonScore, LESSON_IMG } from "../content.js";
 
 function Quiz({ quiz, lessonId }) {
   const [i, setI] = useState(0);
@@ -72,7 +72,7 @@ export default function LessonDetail() {
   return (
     <div className="page">
       <Link to="/lessons" className="back">← Tous les cours</Link>
-      <div className="lhero" dangerouslySetInnerHTML={{ __html: l.svg }} />
+      <div className="lhero"><img src={LESSON_IMG[l.id]} alt={l.title} /></div>
       <span className={`tag ${l.cls}`} style={{ background: "var(--fond)", color: "var(--gris)" }}>{l.chapter}</span>
       <h2 className="h-lg" style={{ marginTop: 8 }}>{l.title}</h2>
       <p className="sub" style={{ fontSize: 16 }}>{l.intro}</p>
@@ -91,7 +91,9 @@ export default function LessonDetail() {
       <style>{`
         .back{color:var(--gris);font-weight:600;font-size:14px;display:inline-block;margin-bottom:14px}
         .back:hover{color:var(--vert)}
-        .lhero{border-radius:18px;overflow:hidden;margin-bottom:16px;box-shadow:var(--sh)}
+        .lhero{border-radius:18px;overflow:hidden;margin-bottom:16px;box-shadow:var(--sh);height:240px;background:var(--fond)}
+        .lhero img{width:100%;height:100%;object-fit:cover;display:block}
+        @media(max-width:560px){.lhero{height:180px}}
         .clist{list-style:none;padding:0;margin:8px 0 0}
         .clist li{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px;font-size:15px}
         .clist li .tick{margin-top:2px;flex:none}

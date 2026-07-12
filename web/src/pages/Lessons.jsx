@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { LESSONS, getProgress } from "../content.js";
+import { LESSONS, getProgress, LESSON_IMG } from "../content.js";
 
 export default function Lessons() {
   const prog = getProgress();
@@ -39,7 +39,7 @@ export default function Lessons() {
           const s = prog.lessons[l.id];
           return (
             <Link to={`/lessons/${l.id}`} key={l.id} className="lcard">
-              <div className="lthumb" dangerouslySetInnerHTML={{ __html: l.svg }} />
+              <div className="lthumb"><img src={LESSON_IMG[l.id]} alt={l.title} loading="lazy" /></div>
               <div className="lbody">
                 <span className={`tag ${l.cls}`} style={{ background: "var(--fond)", color: "var(--gris)" }}>{l.chapter}</span>
                 <h3>{l.title}</h3>
@@ -71,14 +71,14 @@ export default function Lessons() {
         .exam-cta .lchev{color:#fff;font-size:24px}
         .lcard{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--bord);border-radius:18px;padding:14px;box-shadow:var(--sh);transition:.12s}
         .lcard:hover{border-color:var(--vert);transform:translateY(-1px)}
-        .lthumb{width:120px;flex:none;border-radius:12px;overflow:hidden}
-        .lthumb svg{border-radius:12px}
+        .lthumb{width:120px;height:82px;flex:none;border-radius:12px;overflow:hidden;background:var(--fond)}
+        .lthumb img{width:100%;height:100%;object-fit:cover;display:block}
         .lbody{flex:1}
         .lbody h3{font-family:"Sora";font-size:17px;margin:6px 0 3px}
         .lbody p{font-size:13px;color:var(--gris)}
         .badge-done{background:var(--vert-l);color:var(--vert-d);font-weight:700;padding:2px 9px;border-radius:20px}
         .lchev{color:var(--gris);font-size:24px;padding-right:6px}
-        @media(max-width:560px){.lthumb{width:88px}.lbody h3{font-size:15px}}
+        @media(max-width:560px){.lthumb{width:88px;height:64px}.lbody h3{font-size:15px}}
       `}</style>
     </div>
   );
