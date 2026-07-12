@@ -10,6 +10,7 @@ from ..models import User, OTPCode, RefreshToken
 from ..schemas import OTPRequest, OTPVerify, TokenOut, RefreshIn, LogoutIn
 from ..security import create_token, decode_token
 from ..logging import log_event
+from ..sms import sms_enabled, send_otp_sms
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,7 +31,19 @@ def send_otp(payload: OTPRequest, db: Session=Depends(get_db)):
     db.query(OTPCode).filter(OTPCode.phone==payload.phone).delete()
     db.add(OTPCode(phone=payload.phone, code_hash=pwd.hash(code), expires_at=expires_at, attempts=0))
     db.commit()
-    log_event("otp_sent", phone=payload.phone)
+
+    if sms_enabled():
+        # Mode production : envoi du code par SMS via Orange, jamais exposé en clair.
+        try:
+            send_otp_sms(payload.phone, code)
+        except Exception:
+            log_event("otp_sms_failed", phone=payload.phone)
+            raise HTTPException(502, "SMS provider error, please retry")
+        log_event("otp_sent", phone=payload.phone, channel="sms")
+        return {"ok": True, "message": "OTP sent by SMS"}
+
+    # Mode démo (Orange non configuré) : le code est renvoyé pour les tests.
+    log_event("otp_sent", phone=payload.phone, channel="debug")
     return {"ok": True, "message": "OTP sent (dev stub)", "debug_code": code}
 
 @router.post("/otp/verify", response_model=TokenOut)
