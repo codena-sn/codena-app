@@ -22,16 +22,11 @@ export default function Login() {
     setMsg("");
     try {
       const p = normalizeSN(phone);
-      console.log("SEND OTP -> API:", API, "phone:", p);
-
       const r = await api("/auth/otp/send", { method: "POST", body: { phone: p } });
-
-      console.log("SEND OTP OK:", r);
       setDebug(r.debug_code || "");
       setStep(2);
-      setMsg("OTP envoyé ✅ (si tu es en dev, debug_code affiché)");
+      setMsg("Code envoyé ✅ Vérifie tes SMS.");
     } catch (e) {
-      console.error("SEND OTP ERROR:", e);
       setMsg(`Erreur: ${e.message}`);
     } finally {
       setLoading(false);
@@ -43,67 +38,69 @@ export default function Login() {
     setMsg("");
     try {
       const p = normalizeSN(phone);
-      console.log("VERIFY OTP -> API:", API, "phone:", p);
-
       const r = await api("/auth/otp/verify", { method: "POST", body: { phone: p, code } });
-
-      console.log("VERIFY OTP OK:", r);
       setTokens(r.access_token, r.refresh_token);
       setMsg("Connecté ✅");
     } catch (e) {
-      console.error("VERIFY OTP ERROR:", e);
       setMsg(`Erreur: ${e.message}`);
     } finally {
       setLoading(false);
     }
   }
 
+  const isErr = msg.startsWith("Erreur");
+
   return (
-    <div>
-      <h2>Connexion (OTP)</h2>
-
-      <p style={{ color: "#475569" }}>
-        API utilisée : <b>{API}</b>
-      </p>
-
-      <div style={{ maxWidth: 420 }}>
-        <label>Téléphone Sénégal</label>
-        <input
-          style={{ width: "100%", padding: 12, marginTop: 6 }}
-          placeholder="77xxxxxxx ou +22177xxxxxxx"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-
-        {step === 1 && (
-          <button style={{ marginTop: 12 }} onClick={sendOtp} disabled={!phone || loading}>
-            {loading ? "Envoi..." : "Envoyer OTP"}
-          </button>
-        )}
-
-        {step === 2 && (
-          <div style={{ marginTop: 12 }}>
-            <label>Code OTP</label>
-            <input
-              style={{ width: "100%", padding: 12, marginTop: 6 }}
-              placeholder="6 chiffres"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            />
-            <button style={{ marginTop: 12 }} onClick={verifyOtp} disabled={code.length !== 6 || loading}>
-              {loading ? "Vérification..." : "Vérifier"}
-            </button>
-
-            {debug && (
-              <p style={{ color: "#475569" }}>
-                debug_code (dev) : <b>{debug}</b>
-              </p>
-            )}
-          </div>
-        )}
-
-        {msg && <p style={{ marginTop: 12, color: msg.startsWith("Erreur") ? "crimson" : "green" }}>{msg}</p>}
+    <div className="page" style={{ maxWidth: 460 }}>
+      <div style={{ textAlign: "center", marginBottom: 8 }}>
+        <span className="pill">🔑 Connexion sécurisée</span>
       </div>
+      <div className="card">
+        <h2 className="h-lg">Connexion</h2>
+        <p className="sub">Entre ton numéro de téléphone. Nous t'enverrons un code de connexion par SMS.</p>
+
+        <div style={{ marginTop: 20 }}>
+          <label>Numéro de téléphone</label>
+          <input
+            placeholder="77 123 45 67"
+            inputMode="numeric"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && step === 1 && phone && !loading && sendOtp()}
+          />
+
+          {step === 1 && (
+            <button className="btn btn-primary btn-block btn-lg" style={{ marginTop: 16 }} onClick={sendOtp} disabled={!phone || loading}>
+              {loading ? "Envoi…" : "Recevoir mon code"}
+            </button>
+          )}
+
+          {step === 2 && (
+            <div style={{ marginTop: 18 }}>
+              <label>Code reçu par SMS</label>
+              <input
+                placeholder="6 chiffres"
+                inputMode="numeric"
+                style={{ letterSpacing: 6, fontWeight: 700, fontSize: 20, textAlign: "center" }}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                onKeyDown={(e) => e.key === "Enter" && code.length === 6 && !loading && verifyOtp()}
+              />
+              <button className="btn btn-primary btn-block btn-lg" style={{ marginTop: 16 }} onClick={verifyOtp} disabled={code.length !== 6 || loading}>
+                {loading ? "Vérification…" : "Se connecter"}
+              </button>
+              {debug && (
+                <p className="debug">Code (mode démo) : <b style={{ color: "var(--ink)" }}>{debug}</b></p>
+              )}
+            </div>
+          )}
+
+          {msg && <p className={`note ${isErr ? "err" : "ok"}`}>{msg}</p>}
+        </div>
+      </div>
+      <p className="sub" style={{ textAlign: "center", marginTop: 18 }}>
+        En continuant, tu acceptes nos conditions d'utilisation.
+      </p>
     </div>
   );
 }

@@ -1,56 +1,91 @@
 import React, { useEffect, useState } from "react";
 import { api, getAccess } from "../api.js";
 
+function fmt(dt) {
+  try {
+    const d = new Date(dt);
+    if (isNaN(d)) return dt;
+    return d.toLocaleString("fr-FR", { weekday: "short", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  } catch {
+    return dt;
+  }
+}
+
 export default function Booking() {
   const [centers, setCenters] = useState([]);
   const [slots, setSlots] = useState([]);
+  const [sel, setSel] = useState(null);
   const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
 
   useEffect(() => {
-    api("/booking/centers").then(setCenters).catch((e) => setMsg(e.message));
+    api("/booking/centers").then((d) => setCenters(d || [])).catch((e) => setErr(e.message));
   }, []);
 
-  async function loadSlots(centerId) {
+  async function loadSlots(center) {
     setMsg("");
-    const s = await api(`/booking/centers/${centerId}/slots`);
-    setSlots(s);
+    setErr("");
+    setSel(center.id);
+    try {
+      const s = await api(`/booking/centers/${center.id}/slots`);
+      setSlots(s || []);
+    } catch (e) {
+      setErr(e.message);
+    }
   }
 
   async function reserve(slotId) {
     setMsg("");
+    setErr("");
     try {
-      if (!getAccess()) return setMsg("Connecte-toi d’abord (OTP).");
+      if (!getAccess()) return setErr("Connecte-toi d'abord pour réserver.");
       const r = await api("/booking/reserve", { method: "POST", body: { slot_id: slotId }, auth: true });
-      setMsg(`Réservé ✅ PDF: ${r.pdf_url} | QR: ${r.qr_data}`);
+      setMsg(`Réservé ✅ Ta confirmation est prête (PDF + QR code).`);
     } catch (e) {
-      setMsg(e.message);
+      setErr(e.message);
     }
   }
 
   return (
-    <div>
-      <h2>Réserver</h2>
+    <div className="page">
+      <span className="eyebrow">L'examen</span>
+      <h2 className="h-lg" style={{ marginTop: 8 }}>Réserver l'examen</h2>
+      <p className="sub">Choisis d'abord ton centre, puis un créneau.</p>
 
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+      {err && <p className="note err">{err}</p>}
+      {msg && <p className="note ok">{msg}</p>}
+
+      <div style={{ marginTop: 22 }}>
         {centers.map((c) => (
-          <button key={c.id} onClick={() => loadSlots(c.id)}>
-            {c.name}
-          </button>
+          <div key={c.id} className={`row centre ${sel === c.id ? "sel" : ""}`} onClick={() => loadSlots(c)}>
+            <div className="ic g">📍</div>
+            <div>
+              <h4>{c.name}</h4>
+              <div className="meta">{[c.city, c.instructions].filter(Boolean).join(" · ")}</div>
+            </div>
+            {sel === c.id && <div className="right"><span className="tick">✓</span></div>}
+          </div>
         ))}
       </div>
 
-      <ul style={{ marginTop: 16 }}>
-        {slots.slice(0, 10).map((s) => (
-          <li key={s.id}>
-            {s.dt_utc} ({s.booked}/{s.capacity})
-            <button style={{ marginLeft: 8 }} onClick={() => reserve(s.id)}>
-              Réserver
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {msg && <p style={{ marginTop: 12 }}>{msg}</p>}
+      {sel && (
+        <>
+          <h3 style={{ fontSize: 16, margin: "26px 4px 14px", color: "var(--gris)", textTransform: "uppercase", letterSpacing: ".05em" }}>Créneaux disponibles</h3>
+          {slots.length === 0 && <p className="sub">Aucun créneau pour ce centre.</p>}
+          {slots.slice(0, 12).map((s) => (
+            <div className="row" key={s.id}>
+              <div className="ic y">🕒</div>
+              <div>
+                <h4 style={{ textTransform: "capitalize" }}>{fmt(s.dt_utc)}</h4>
+                <div className="meta">Places : {s.booked}/{s.capacity}</div>
+              </div>
+              <div className="right">
+                <button className="btn btn-primary" onClick={() => reserve(s.id)}>Réserver</button>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }
