@@ -5,6 +5,7 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Lessons from "./pages/Lessons.jsx";
 import LessonDetail from "./pages/LessonDetail.jsx";
+import Exam from "./pages/Exam.jsx";
 import Booking from "./pages/Booking.jsx";
 
 const CSS = `
@@ -129,6 +130,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />
+        <Route path="/examen" element={<Exam />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="*" element={<div className="page"><h2 className="h-lg">Page introuvable</h2><p className="sub">Cette page n'existe pas. <Link to="/" style={{ color: "var(--vert)", fontWeight: 700 }}>Retour à l'accueil</Link></p></div>} />
       </Routes>
