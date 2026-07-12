@@ -229,7 +229,7 @@ export const LESSON_IMG = {
   eclairage: PX(30546867),
   stationnement: PX(36443561),
   secours: PX(6129679),
-  reglementation: PX(27137059),
+  reglementation: PX(2199293),
 };
 
 // --- Réservoir de questions pour l'examen blanc (toutes les questions des leçons) ---
