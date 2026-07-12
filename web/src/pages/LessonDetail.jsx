@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getLesson } from "../content.js";
+import { getLesson, saveLessonScore } from "../content.js";
 
-function Quiz({ quiz }) {
+function Quiz({ quiz, lessonId }) {
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (done && lessonId) saveLessonScore(lessonId, score, quiz.length);
+  }, [done]);
 
   if (done) {
     const good = score === quiz.length;
@@ -15,36 +19,27 @@ function Quiz({ quiz }) {
         <div style={{ fontSize: 40 }}>{good ? "🎉" : "💪"}</div>
         <h3 style={{ fontFamily: "Sora", fontSize: 22, margin: "6px 0" }}>Score : {score}/{quiz.length}</h3>
         <p className="sub">{good ? "Parfait ! Tu maîtrises cette leçon." : "Pas mal ! Refais le quiz pour progresser."}</p>
+        <p className="sub" style={{ fontSize: 12.5, marginTop: 4 }}>✓ Progression enregistrée</p>
         <button className="btn btn-primary" style={{ marginTop: 14 }} onClick={() => { setI(0); setPicked(null); setScore(0); setDone(false); }}>Recommencer</button>
       </div>
     );
   }
 
   const q = quiz[i];
-  const choose = (idx) => {
-    if (picked !== null) return;
-    setPicked(idx);
-    if (idx === q.answer) setScore((s) => s + 1);
-  };
-  const next = () => {
-    if (i + 1 < quiz.length) { setI(i + 1); setPicked(null); }
-    else setDone(true);
-  };
+  const choose = (idx) => { if (picked !== null) return; setPicked(idx); if (idx === q.answer) setScore((s) => s + 1); };
+  const next = () => { if (i + 1 < quiz.length) { setI(i + 1); setPicked(null); } else setDone(true); };
 
   return (
     <div className="qcard">
       <div className="qprog">
         <span>Question {i + 1} / {quiz.length}</span>
-        <div className="qbar"><i style={{ width: `${((i) / quiz.length) * 100}%` }} /></div>
+        <div className="qbar"><i style={{ width: `${(i / quiz.length) * 100}%` }} /></div>
       </div>
       <h3 className="qq">{q.q}</h3>
       <div style={{ display: "grid", gap: 10, marginTop: 14 }}>
         {q.options.map((o, idx) => {
           let st = "qopt";
-          if (picked !== null) {
-            if (idx === q.answer) st += " ok";
-            else if (idx === picked) st += " ko";
-          }
+          if (picked !== null) { if (idx === q.answer) st += " ok"; else if (idx === picked) st += " ko"; }
           return (
             <button key={idx} className={st} onClick={() => choose(idx)} disabled={picked !== null}>
               <span className="qletter">{String.fromCharCode(97 + idx)}</span>{o}
@@ -91,7 +86,7 @@ export default function LessonDetail() {
       ))}
 
       <h3 style={{ fontFamily: "Sora", fontSize: 20, margin: "28px 0 12px" }}>🧠 Teste tes connaissances</h3>
-      <Quiz quiz={l.quiz} />
+      <Quiz quiz={l.quiz} lessonId={l.id} />
 
       <style>{`
         .back{color:var(--gris);font-weight:600;font-size:14px;display:inline-block;margin-bottom:14px}
