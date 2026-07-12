@@ -7,6 +7,7 @@ import Lessons from "./pages/Lessons.jsx";
 import LessonDetail from "./pages/LessonDetail.jsx";
 import Exam from "./pages/Exam.jsx";
 import Booking from "./pages/Booking.jsx";
+import Onboarding from "./pages/Onboarding.jsx";
 
 // TODO : remplacer par le numéro WhatsApp officiel Codéna
 const WHATSAPP = "https://wa.me/221784484519?text=Bonjour%20Cod%C3%A9na%20%F0%9F%91%8B";
@@ -152,6 +153,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/bienvenue" element={<Onboarding />} />
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/lessons/:id" element={<LessonDetail />} />
         <Route path="/examen" element={<Exam />} />
